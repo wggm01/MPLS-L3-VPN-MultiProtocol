@@ -1,0 +1,195 @@
+!
+
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname RG_MATRIZ
+!
+boot-start-marker
+boot-end-marker
+!
+enable password 7 0822455D0A16
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+no ip dhcp use vrf connected
+ip dhcp excluded-address 172.16.120.1
+ip dhcp excluded-address 172.16.120.9
+ip dhcp excluded-address 172.16.121.1
+ip dhcp excluded-address 172.16.121.33
+ip dhcp excluded-address 172.16.120.10
+ip dhcp excluded-address 172.16.121.65
+ip dhcp excluded-address 172.16.121.66
+ip dhcp excluded-address 172.16.121.34
+!
+ip dhcp pool ADMINISTRADORES
+   network 172.16.120.8 255.255.255.248
+   default-router 172.16.120.9 
+   dns-server 172.16.120.3 
+!
+ip dhcp pool EJECUTIVOS
+   network 172.16.121.64 255.255.255.248
+   default-router 172.16.121.65 
+   dns-server 172.16.120.3 
+!
+ip dhcp pool PCs
+   network 172.16.121.32 255.255.255.224
+   default-router 172.16.121.33 
+   dns-server 172.16.120.3 
+!
+ip dhcp pool IP-PHONES
+   network 172.16.121.0 255.255.255.224
+   default-router 172.16.121.1 
+   option 150 ip 172.16.121.1 
+   dns-server 172.16.120.3 
+!
+!
+no ip domain lookup
+ip domain name rg-matriz.com
+ip auth-proxy max-nodata-conns 3
+ip admission max-nodata-conns 3
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+! 
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.16.123.13 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.123.17 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0.3
+ encapsulation dot1Q 3
+ ip address 172.16.120.1 255.255.255.248
+!
+interface FastEthernet1/0.4
+ encapsulation dot1Q 4
+ ip address 172.16.120.9 255.255.255.248
+!
+interface FastEthernet1/0.99
+ encapsulation dot1Q 99
+!
+interface FastEthernet2/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet2/0.10
+ encapsulation dot1Q 10
+ ip address 172.16.121.65 255.255.255.248
+!
+interface FastEthernet2/0.99
+ encapsulation dot1Q 99
+!
+interface FastEthernet3/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet3/0.20
+ encapsulation dot1Q 20
+ ip address 172.16.121.1 255.255.255.224
+!
+interface FastEthernet3/0.30
+ encapsulation dot1Q 30
+ ip address 172.16.121.33 255.255.255.224
+!
+interface FastEthernet3/0.99
+ encapsulation dot1Q 99
+!
+interface FastEthernet4/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 172.16.123.18
+ip route 172.16.122.0 255.255.255.128 172.16.123.14
+ip route 172.16.123.0 255.255.255.252 172.16.123.14
+ip route 172.16.123.4 255.255.255.252 172.16.123.14
+ip route 172.16.123.8 255.255.255.252 172.16.123.14
+!
+!
+no ip http server
+no ip http secure-server
+!
+access-list 2 permit 172.16.120.8 0.0.0.7
+access-list 2 deny   any
+no cdp log mismatch duplex
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+telephony-service
+ max-ephones 25
+ max-dn 25
+ ip source-address 172.16.121.1 port 2000
+ auto assign 4 to 6
+ auto assign 1 to 5
+ max-conferences 8 gain -6
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class 2 in
+ password 7 060506324F41
+ login
+ transport input telnet ssh
+!
+!
+end

@@ -1,0 +1,133 @@
+Show run - Switch Veraguas
+
+MSW-VERA#sh run
+Building configuration...
+
+Current configuration : 1850 bytes
+!
+! Last configuration change at 02:43:01 UTC Tue Jul 14 2020
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname MSW-VERA
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging discriminator EXCESS severity drops 6 msg-body drops EXCESSCOLL
+logging buffered 50000
+logging console discriminator EXCESS
+enable secret 5 $1$JrxH$G5w/MPuj13cR.frYCYmWY.
+!
+no aaa new-model
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+no ip domain-lookup
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+!
+interface Ethernet0/1
+!
+interface Ethernet0/2
+!
+interface Ethernet0/3
+!
+interface Ethernet1/0
+!
+interface Ethernet1/1
+!
+interface Ethernet1/2
+!
+interface Ethernet1/3
+!
+interface Ethernet2/0
+!
+interface Ethernet2/1
+!
+interface Ethernet2/2
+!
+interface Ethernet2/3
+!
+interface Ethernet3/0
+!
+interface Ethernet3/1
+!
+interface Ethernet3/2
+!
+interface Ethernet3/3
+!
+interface Vlan1
+ ip address 172.16.100.0 255.255.240.0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip route 172.16.1.0 255.255.255.252 172.16.96.1
+!
+!
+access-list 1 permit 172.16.1.0 0.0.0.127
+access-list 101 permit ip any any
+access-list 101 permit tcp any any eq smtp
+access-list 101 permit tcp any any eq telnet
+access-list 101 permit tcp any any eq pop3
+access-list 101 permit tcp any any eq ftp
+access-list 101 permit tcp any any eq ftp-data
+access-list 101 permit udp any any eq domain
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class 1 in
+ password cisco
+ login
+!
+!
+end

@@ -1,0 +1,179 @@
+Show run - Casa Matriz
+
+M-CM#sh run
+Building configuration...
+
+Current configuration : 2866 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname M-CM
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+no ip dhcp use vrf connected
+!
+ip dhcp pool Administrativos
+   network 172.16.1.0 255.255.255.128
+   default-router 172.16.1.1
+   dns-server 172.16.0.5
+!
+ip dhcp pool PB
+   network 172.16.4.0 255.255.252.0
+   default-router 172.16.4.1
+   dns-server 172.16.0.5
+!
+ip dhcp pool Servidores
+   network 172.16.0.0 255.255.255.128
+   default-router 172.16.0.1
+   dns-server 172.16.0.5
+!
+ip dhcp pool Directivos
+   network 172.16.0.128 255.255.255.128
+   default-router 172.16.0.129
+   dns-server 172.16.0.5
+!
+!
+no ip domain lookup
+ip auth-proxy max-nodata-conns 3
+ip admission max-nodata-conns 3
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.16.112.14 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.112.21 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ ip address 172.16.112.17 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0.10
+ encapsulation dot1Q 10
+ ip address 172.16.1.1 255.255.255.128
+!
+interface FastEthernet1/0.20
+ encapsulation dot1Q 20
+ ip address 172.16.0.129 255.255.255.128
+!
+interface FastEthernet1/0.30
+ encapsulation dot1Q 30
+ ip address 172.16.0.1 255.255.255.128
+!
+interface FastEthernet2/0
+ ip address 172.16.4.1 255.255.252.0
+ duplex auto
+ speed auto
+!
+interface FastEthernet3/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet4/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+router ospf 5
+ log-adjacency-changes
+ redistribute ospf 6 subnets
+ network 172.16.0.0 0.0.0.127 area 0
+ network 172.16.0.128 0.0.0.127 area 0
+ network 172.16.1.0 0.0.0.127 area 0
+ network 172.16.4.0 0.0.3.255 area 0
+ network 172.16.112.12 0.0.0.3 area 0
+ network 172.16.112.16 0.0.0.3 area 0
+!
+router ospf 6
+ log-adjacency-changes
+ redistribute ospf 5 subnets
+ network 172.16.112.20 0.0.0.3 area 0
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 172.16.112.22
+!
+!
+no ip http server
+no ip http secure-server
+!
+access-list 1 permit 172.16.1.0 0.0.0.127
+access-list 101 permit ip any any
+access-list 101 permit tcp any any eq smtp
+access-list 101 permit tcp any any eq telnet
+access-list 101 permit tcp any any eq pop3
+access-list 101 permit tcp any any eq ftp
+access-list 101 permit tcp any any eq ftp-data
+access-list 101 permit udp any any eq domain
+no cdp log mismatch duplex
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class 1 in
+ password cisco
+ login
+!
+!
+end

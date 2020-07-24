@@ -1,0 +1,135 @@
+
+!
+upgrade fpd auto
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname CM_ARI_NAT
+!
+boot-start-marker
+boot-end-marker
+!
+logging message-counter syslog
+!
+no aaa new-model
+ip source-route
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.16.124.26 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
+ duplex half
+!
+interface GigabitEthernet1/0
+ ip address 200.40.20.25 255.255.255.248
+ ip nat outside
+ ip virtual-reassembly
+ negotiation auto
+!
+interface GigabitEthernet2/0
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3/0
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet4/0
+ no ip address
+ shutdown
+ negotiation auto
+!
+router rip
+ version 2
+ network 172.16.0.0
+ network 200.40.20.0
+ no auto-summary
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 200.40.20.165
+no ip http server
+no ip http secure-server
+!
+!
+ip nat inside source list 100 interface GigabitEthernet1/0 overload
+!
+access-list 100 permit ip 172.16.0.0 0.0.255.255 any
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+gatekeeper
+ shutdown
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ exec-timeout 15 0
+ password cisco
+ logging synchronous
+ login
+ transport input telnet
+!
+end

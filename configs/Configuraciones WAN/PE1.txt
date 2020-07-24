@@ -1,0 +1,165 @@
+
+!
+upgrade fpd auto
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname pe1
+!
+boot-start-marker
+boot-end-marker
+!
+logging message-counter syslog
+enable password proyecto
+!
+no aaa new-model
+ip source-route
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+ip vrf INTERNET
+ rd 52100:1
+ route-target export 52100:1
+ route-target import 52100:1
+!
+!
+!
+no ip domain lookup
+ip domain name pe1.com
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username proyecto password 0 proyecto
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface Loopback0
+ ip address 1.2.2.2 255.255.255.255
+!
+interface Ethernet0/0
+ no ip address
+ shutdown
+ duplex auto
+!
+interface GigabitEthernet0/0
+ bandwidth 1250000
+ ip address 10.0.1.6 255.255.255.252
+ duplex full
+ speed 1000
+ media-type gbic
+ negotiation auto
+!
+interface GigabitEthernet1/0
+ bandwidth 500000
+ ip vrf forwarding INTERNET
+ ip address 200.40.20.165 255.255.255.252
+ negotiation auto
+!
+interface GigabitEthernet2/0
+ ip address 10.0.3.9 255.255.255.252
+ negotiation auto
+!
+router ospf 1
+ mpls ldp autoconfig
+ router-id 1.2.2.2
+ log-adjacency-changes
+ network 1.2.2.2 0.0.0.0 area 10
+ network 10.0.1.4 0.0.0.3 area 10
+ network 10.0.3.8 0.0.0.3 area 10
+!
+router bgp 52100
+ bgp router-id 1.2.2.2
+ no bgp default ipv4-unicast
+ bgp log-neighbor-changes
+ neighbor 1.1.2.1 remote-as 52100
+ neighbor 1.1.2.1 update-source Loopback0
+ !
+ address-family ipv4
+  no auto-summary
+  no synchronization
+  network 200.40.20.0 mask 255.255.255.252
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 1.1.2.1 activate
+  neighbor 1.1.2.1 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf INTERNET
+  redistribute connected
+  redistribute rip
+  no synchronization
+ exit-address-family
+!
+ip forward-protocol nd
+ip route vrf INTERNET 0.0.0.0 0.0.0.0 200.40.20.166
+no ip http server
+no ip http secure-server
+!
+!
+!
+access-list 21 permit 10.0.3.8 0.0.0.3
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+gatekeeper
+ shutdown
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ access-class 21 in
+ login local
+ transport input ssh
+!
+end

@@ -1,0 +1,343 @@
+
+!
+upgrade fpd auto
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname PE5
+!
+boot-start-marker
+boot-end-marker
+!
+logging message-counter syslog
+enable password proyecto
+!
+no aaa new-model
+ip source-route
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+ip vrf ARIEL
+ rd 1:69
+ route-target export 1:69
+ route-target import 1:69
+!
+ip vrf INTERNET
+ rd 52100:1
+ route-target export 52100:1
+ route-target import 52100:1
+!
+ip vrf Loyra
+ rd 1:4
+ route-target export 1:4
+ route-target import 1:4
+!
+ip vrf MARY
+ rd 1:30
+ route-target export 1:30
+ route-target import 1:30
+!
+ip vrf RICSA
+ rd 1:70
+ route-target export 1:70
+ route-target import 1:70
+!
+ip vrf WVALDO
+ rd 20:20
+ route-target export 20:20
+ route-target import 20:20
+!
+!
+!
+no ip domain lookup
+ip domain name pe5.com
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username proyecto password 0 proyecto
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface Loopback0
+ ip address 1.1.2.1 255.255.255.255
+ ip ospf 1 area 10
+!
+interface Ethernet0/0
+ no ip address
+ shutdown
+ duplex auto
+!
+interface GigabitEthernet0/0
+ bandwidth 1250000
+ ip address 10.0.1.2 255.255.255.252
+ ip ospf 1 area 10
+ duplex full
+ speed 1000
+ media-type gbic
+ negotiation auto
+!
+interface GigabitEthernet1/0
+ no ip address
+ negotiation auto
+!
+interface GigabitEthernet1/0.40
+ encapsulation dot1Q 40
+ ip address 10.0.2.1 255.255.255.252
+!
+interface GigabitEthernet1/0.100
+ bandwidth 50000
+ encapsulation dot1Q 100
+ ip vrf forwarding Loyra
+ ip address 172.16.121.2 255.255.255.252
+ ip ospf 2 area 0
+!
+interface GigabitEthernet1/0.110
+ bandwidth 50000
+ encapsulation dot1Q 110
+ ip vrf forwarding INTERNET
+ ip address 200.40.20.2 255.255.255.248
+ ip ospf 3 area 0
+!
+interface GigabitEthernet1/0.200
+ encapsulation dot1Q 200
+ ip vrf forwarding WVALDO
+ ip address 172.16.121.2 255.255.255.252
+!
+interface GigabitEthernet1/0.210
+ encapsulation dot1Q 210
+ ip vrf forwarding INTERNET
+ ip address 200.40.20.10 255.255.255.248
+!
+interface GigabitEthernet1/0.300
+ encapsulation dot1Q 300
+ ip vrf forwarding MARY
+ ip address 172.16.112.13 255.255.255.252
+ ip ospf 5 area 0
+!
+interface GigabitEthernet1/0.310
+ encapsulation dot1Q 310
+ ip vrf forwarding INTERNET
+ ip address 200.40.20.18 255.255.255.248
+ ip ospf 8 area 0
+!
+interface GigabitEthernet1/0.500
+ encapsulation dot1Q 500
+ ip vrf forwarding RICSA
+ ip address 172.16.123.14 255.255.255.252
+!
+interface GigabitEthernet1/0.510
+ encapsulation dot1Q 510
+ ip vrf forwarding INTERNET
+ ip address 200.40.20.34 255.255.255.248
+!
+interface GigabitEthernet1/0.600
+ encapsulation dot1Q 600
+ ip vrf forwarding ARIEL
+ ip address 172.16.124.13 255.255.255.252
+ ip rip send version 1 2
+ ip rip receive version 1 2
+!
+interface GigabitEthernet1/0.610
+ encapsulation dot1Q 610
+ ip vrf forwarding INTERNET
+ ip address 200.40.20.26 255.255.255.248
+ ip rip send version 1 2
+ ip rip receive version 1 2
+!
+router eigrp 20
+ auto-summary
+ !
+ address-family ipv4 vrf WVALDO
+  redistribute bgp 52100 metric 200 1 1 1 200
+  network 172.16.121.0 0.0.0.3
+  auto-summary
+  autonomous-system 20
+  eigrp router-id 0.0.0.8
+ exit-address-family
+!
+router eigrp 210
+ auto-summary
+ !
+ address-family ipv4 vrf INTERNET
+  redistribute bgp 52100 metric 200 1 1 1 200
+  network 200.40.20.8 0.0.0.3
+  no auto-summary
+  autonomous-system 20
+  eigrp router-id 0.0.0.8
+ exit-address-family
+!
+router ospf 2 vrf Loyra
+ log-adjacency-changes
+ redistribute bgp 52100 subnets
+!
+router ospf 3 vrf INTERNET
+ log-adjacency-changes
+ redistribute bgp 52100 subnets
+!
+router ospf 5 vrf MARY
+ log-adjacency-changes
+ redistribute bgp 52100 subnets
+!
+router ospf 1
+ mpls ldp autoconfig
+ log-adjacency-changes
+ network 10.0.2.0 0.0.0.3 area 10
+!
+router ospf 8 vrf INTERNET
+ log-adjacency-changes
+ redistribute bgp 52100 subnets
+!
+router rip
+ version 2
+ network 172.16.0.0
+ no auto-summary
+ !
+ address-family ipv4 vrf INTERNET
+  redistribute connected
+  redistribute bgp 52100 metric 0
+  network 200.40.20.0
+  no auto-summary
+  version 2
+ exit-address-family
+ !
+ address-family ipv4 vrf ARIEL
+  redistribute connected
+  redistribute bgp 52100 metric 0
+  network 172.16.0.0
+  no auto-summary
+  version 2
+ exit-address-family
+!
+router bgp 52100
+ bgp router-id 1.1.2.1
+ no bgp default ipv4-unicast
+ bgp log-neighbor-changes
+ neighbor 1.1.2.3 remote-as 52100
+ neighbor 1.1.2.3 update-source Loopback0
+ neighbor 1.1.2.4 remote-as 52100
+ neighbor 1.1.2.4 update-source Loopback0
+ neighbor 1.1.2.5 remote-as 52100
+ neighbor 1.1.2.5 update-source Loopback0
+ neighbor 1.2.2.2 remote-as 52100
+ !
+ address-family vpnv4
+  neighbor 1.1.2.3 activate
+  neighbor 1.1.2.3 send-community extended
+  neighbor 1.1.2.4 activate
+  neighbor 1.1.2.4 send-community extended
+  neighbor 1.1.2.5 activate
+  neighbor 1.1.2.5 send-community extended
+  neighbor 1.2.2.2 activate
+  neighbor 1.2.2.2 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf WVALDO
+  redistribute eigrp 20
+  no synchronization
+ exit-address-family
+ !
+ address-family ipv4 vrf RICSA
+  redistribute connected
+  redistribute static
+  no synchronization
+ exit-address-family
+ !
+ address-family ipv4 vrf MARY
+  redistribute ospf 5 vrf MARY match internal external 2
+  no synchronization
+ exit-address-family
+ !
+ address-family ipv4 vrf Loyra
+  redistribute ospf 2 vrf Loyra match internal external 2
+  no synchronization
+ exit-address-family
+ !
+ address-family ipv4 vrf INTERNET
+  redistribute connected
+  redistribute ospf 3 vrf INTERNET
+  redistribute ospf 8 vrf INTERNET
+  redistribute eigrp 20
+  redistribute rip
+  no synchronization
+ exit-address-family
+ !
+ address-family ipv4 vrf ARIEL
+  redistribute connected
+  redistribute rip
+  no synchronization
+ exit-address-family
+!
+ip forward-protocol nd
+ip route vrf INTERNET 0.0.0.0 0.0.0.0 200.40.20.165
+ip route vrf RICSA 0.0.0.0 0.0.0.0 172.16.123.13
+ip route vrf RICSA 172.16.120.0 255.255.254.0 172.16.123.13
+no ip http server
+no ip http secure-server
+!
+!
+!
+access-list 21 permit 10.0.3.8 0.0.0.3
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+gatekeeper
+ shutdown
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ access-class 21 in
+ login local
+ transport input ssh
+!
+end

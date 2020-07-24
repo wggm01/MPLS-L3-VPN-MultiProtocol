@@ -1,0 +1,177 @@
+
+!
+! Last configuration change at 20:29:05 UTC Tue Jul 14 2020
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+service compress-config
+!
+hostname RG_SWPB
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging discriminator EXCESS severity drops 6 msg-body drops EXCESSCOLL 
+logging buffered 50000
+logging console discriminator EXCESS
+enable password 7 045802150C2E
+!
+no aaa new-model
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+no ip domain-lookup
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+ip tcp synwait-time 5
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 99
+ switchport mode trunk
+!
+interface Ethernet0/1
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet0/2
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet0/3
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet1/0
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet1/1
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet1/2
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet1/3
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet2/0
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet2/1
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet2/2
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet2/3
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet3/0
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet3/1
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet3/2
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Ethernet3/3
+ switchport access vlan 30
+ switchport mode access
+ switchport voice vlan 20
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan30
+ ip address 172.16.121.34 255.255.255.224
+!
+ip default-gateway 172.16.121.33
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip route 0.0.0.0 0.0.0.0 172.16.121.33
+!
+!
+access-list 2 permit 172.16.120.8 0.0.0.7
+access-list 2 deny   any
+!
+!
+!
+control-plane
+!
+banner motd  CONFIGURACION SWITCH PLANTA BAJA:::SOLO PERSONAL AUTORIZADO 
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class 2 in
+ password 7 060506324F41
+ login
+ transport input telnet
+!
+!
+end

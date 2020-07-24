@@ -1,0 +1,136 @@
+!
+!
+!
+!
+!
+!
+!
+
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname RG_NAT
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+ip auth-proxy max-nodata-conns 3
+ip admission max-nodata-conns 3
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+! 
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 200.40.20.33 255.255.255.248
+ ip nat outside
+ ip virtual-reassembly
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.123.18 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet2/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet3/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet4/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+router rip
+ version 2
+ network 200.40.20.0
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 200.40.20.165
+ip route 172.16.0.0 255.255.128.0 172.16.123.17
+!
+!
+no ip http server
+no ip http secure-server
+ip nat inside source list 1 interface FastEthernet0/0 overload
+!
+access-list 1 permit 172.16.0.0 0.0.127.255
+no cdp log mismatch duplex
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login
+!
+!
+end

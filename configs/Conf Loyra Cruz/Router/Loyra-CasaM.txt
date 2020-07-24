@@ -1,0 +1,175 @@
+Building configuration...
+
+Current configuration : 2695 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Loyra-CasaM
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+no ip dhcp use vrf connected
+!
+ip dhcp pool PlantaBaja
+   network 172.16.96.0 255.255.248.0
+   default-router 172.16.96.24
+   option 150 ip 172.16.96.24
+   dns-server 8.8.8.8
+!
+ip dhcp pool servidores
+   network 172.16.0.0 255.255.248.0
+   default-router 172.16.0.1
+   dns-server 8.8.8.8
+!
+ip dhcp pool administracion
+   network 172.16.40.0 255.255.248.0
+   default-router 172.16.40.1
+   dns-server 8.8.8.8
+!
+ip dhcp pool directivos
+   network 172.16.48.0 255.255.248.0
+   default-router 172.16.48.1
+   option 150 ip 172.16.48.1
+   dns-server 8.8.8.8
+!
+!
+no ip domain lookup
+ip auth-proxy max-nodata-conns 3
+ip admission max-nodata-conns 3
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.16.121.1 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.129.1 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0.10
+ encapsulation dot1Q 10
+ ip address 172.16.0.1 255.255.248.0
+!
+interface FastEthernet1/0.20
+ encapsulation dot1Q 20
+ ip address 172.16.40.1 255.255.248.0
+!
+interface FastEthernet1/0.30
+ encapsulation dot1Q 30
+ ip address 172.16.48.1 255.255.248.0
+!
+interface FastEthernet2/0
+ ip address 172.16.96.24 255.255.248.0
+ duplex auto
+ speed auto
+!
+interface FastEthernet3/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet4/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+router ospf 2
+ log-adjacency-changes
+ redistribute ospf 4 subnets
+ network 172.16.0.0 0.0.7.255 area 0
+ network 172.16.24.0 0.0.7.255 area 0
+ network 172.16.40.0 0.0.7.255 area 0
+ network 172.16.48.0 0.0.7.255 area 0
+ network 172.16.96.0 0.0.7.255 area 0
+ network 172.16.121.0 0.0.0.3 area 0
+!
+router ospf 4
+ log-adjacency-changes
+ redistribute ospf 2 subnets
+ network 172.16.129.0 0.0.0.3 area 0
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 172.16.129.2
+!
+!
+no ip http server
+no ip http secure-server
+!
+access-list 20 permit 172.16.40.0 0.0.7.255
+snmp-server community private RW
+no cdp log mismatch duplex
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ password cisco login
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class 20 in
+ password cisco
+ logging synchronous
+ login
+ transport input telnet
+!
+!
+end

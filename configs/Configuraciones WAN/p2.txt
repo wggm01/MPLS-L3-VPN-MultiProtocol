@@ -1,0 +1,141 @@
+
+!
+upgrade fpd auto
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname P2
+!
+boot-start-marker
+boot-end-marker
+!
+logging message-counter syslog
+enable password proyecto
+!
+no aaa new-model
+ip source-route
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+ip domain name P2.com
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username proyecto password 0 proyecto
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+interface Loopback0
+ ip address 1.1.1.2 255.255.255.255
+!
+interface Ethernet0/0
+ no ip address
+ shutdown
+ duplex auto
+!
+interface GigabitEthernet0/0
+ bandwidth 1250000
+ ip address 10.0.0.2 255.255.255.252
+ duplex full
+ speed 1000
+ media-type gbic
+ negotiation auto
+ mpls ip
+!
+interface GigabitEthernet1/0
+ bandwidth 1250000
+ ip address 10.0.0.5 255.255.255.252
+ negotiation auto
+ mpls ip
+!
+interface GigabitEthernet2/0
+ bandwidth 1250000
+ ip address 10.0.1.9 255.255.255.252
+ negotiation auto
+ mpls ip
+!
+router ospf 1
+ mpls ldp autoconfig area 10
+ router-id 1.1.1.2
+ log-adjacency-changes
+ network 1.1.1.2 0.0.0.0 area 10
+ network 10.0.0.0 0.0.0.3 area 10
+ network 10.0.0.4 0.0.0.3 area 10
+ network 10.0.1.8 0.0.0.3 area 10
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+!
+!
+access-list 21 permit 10.0.3.8 0.0.0.3
+ --More--
+*Jul 10 21:21:19.451: %LDP-5-NBRCHG: LDP Neighbor 1.1.2.3:0 (3) is UP
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+gatekeeper
+ shutdown
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ access-class 21 in
+ login local
+ transport input ssh
+!
+end

@@ -1,0 +1,134 @@
+!
+
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname RG_RTCH
+!
+boot-start-marker
+boot-end-marker
+!
+enable password 7 14141B180F0B
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+no ip dhcp use vrf connected
+ip dhcp excluded-address 172.16.122.65
+ip dhcp excluded-address 172.16.122.66
+!
+ip dhcp pool CHIRIQUI
+   network 172.16.122.64 255.255.255.224
+   default-router 172.16.122.65 
+   dns-server 172.16.120.3 
+!
+!
+no ip domain lookup
+ip domain name rg-routch.com
+ip auth-proxy max-nodata-conns 3
+ip admission max-nodata-conns 3
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username cisco password 7 05080F1C2243
+!
+!
+ip tcp synwait-time 5
+! 
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.16.123.9 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.122.65 255.255.255.224
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet2/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet3/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet4/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 172.16.123.10
+!
+!
+no ip http server
+no ip http secure-server
+!
+access-list 2 permit 172.16.120.8 0.0.0.7
+no cdp log mismatch duplex
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class 2 in
+ password 7 110A1016141D
+ login
+ transport input telnet ssh
+!
+!
+end

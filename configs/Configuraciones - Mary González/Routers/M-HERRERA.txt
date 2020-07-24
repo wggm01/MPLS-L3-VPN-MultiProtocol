@@ -1,0 +1,147 @@
+Show run - Sucursal Herrera
+
+M-HERRERA#sh run
+Building configuration...
+
+Current configuration : 2030 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname M-HERRERA
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$FbQN$PJpRqP0ZBJe2QWmFkyrbc1
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+no ip dhcp use vrf connected
+!
+ip dhcp pool herrera
+   network 172.16.64.0 255.255.240.0
+   default-router 172.16.64.1
+   dns-server 172.16.0.5
+!
+!
+no ip domain lookup
+ip auth-proxy max-nodata-conns 3
+ip admission max-nodata-conns 3
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 172.16.112.1 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 172.16.64.1 255.255.240.0
+ ip access-group 101 in
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet2/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet3/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet4/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+router ospf 5
+ log-adjacency-changes
+ network 172.16.64.0 0.0.15.255 area 0
+ network 172.16.112.0 0.0.0.3 area 0
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 172.16.112.2
+!
+!
+no ip http server
+no ip http secure-server
+!
+access-list 1 permit 172.16.1.0 0.0.0.127
+access-list 101 permit ip any any
+access-list 101 permit tcp any any eq smtp
+access-list 101 permit tcp any any eq telnet
+access-list 101 permit tcp any any eq pop3
+access-list 101 permit tcp any any eq ftp
+access-list 101 permit tcp any any eq ftp-data
+access-list 101 permit udp any any eq domain
+no cdp log mismatch duplex
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+banner motd ^CCSUCURSAL DE HERRERA, SISTEMA PROTEGIDO^C
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ access-class 1 in
+ password cisco
+ login
+!
+!
+end

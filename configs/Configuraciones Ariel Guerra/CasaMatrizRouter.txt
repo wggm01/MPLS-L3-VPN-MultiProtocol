@@ -1,0 +1,159 @@
+
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname CM_ARI
+!
+boot-start-marker
+boot-end-marker
+!
+enable password cisco
+!
+no aaa new-model
+memory-size iomem 5
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+no ip dhcp use vrf connected
+ip dhcp excluded-address 172.16.120.1 172.16.120.10
+ip dhcp excluded-address 172.16.125.1 172.16.125.2
+!
+ip dhcp pool casam
+   network 172.16.120.0 255.255.255.0
+   default-router 172.16.120.1
+!
+ip dhcp pool vips
+   network 172.16.125.0 255.255.255.0
+   default-router 172.16.125.1
+!
+!
+no ip domain lookup
+ip auth-proxy max-nodata-conns 3
+ip admission max-nodata-conns 3
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip tcp synwait-time 5
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 44.44.44.44 255.255.255.255
+!
+interface FastEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/0.50
+ encapsulation dot1Q 50
+ ip address 172.16.120.1 255.255.255.0
+!
+interface FastEthernet0/0.80
+ encapsulation dot1Q 80
+ ip address 172.16.125.1 255.255.255.240
+!
+interface FastEthernet0/0.90
+ encapsulation dot1Q 90
+ ip address 172.16.126.1 255.255.255.224
+!
+interface FastEthernet0/1
+ ip address 172.16.124.25 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+ ip address 172.16.124.14 255.255.255.252
+ ip access-group inbound in
+ duplex auto
+ speed auto
+!
+interface FastEthernet2/0
+ no ip address
+ speed auto
+ full-duplex
+!
+interface FastEthernet3/0
+ no ip address
+ speed auto
+ full-duplex
+!
+interface FastEthernet4/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+router rip
+ version 2
+ network 172.16.0.0
+ no auto-summary
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 200.40.20.26
+!
+!
+no ip http server
+no ip http secure-server
+!
+ip access-list extended inbound
+ permit icmp any any
+ permit tcp 172.16.125.0 0.0.0.255 any eq telnet
+ permit ip 172.16.124.0 0.0.0.255 any
+ permit tcp host 0.0.0.0 any eq www
+ permit udp host 0.0.0.0 any eq 443
+!
+no cdp log mismatch duplex
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ exec-timeout 15 0
+ password cisco
+ logging synchronous
+ login
+ transport input telnet
+!
+!
+end
