@@ -10,6 +10,7 @@ Design Proposal and simulation of a WAN network with multiple customers.
 * [Project Members](#project-members)
 * [Requeriments](#requeriments)
 * [Resources](#resources)
+* [How to use](#how-to-use)
 
 ## Project Members:
 * Loyra Cruz
