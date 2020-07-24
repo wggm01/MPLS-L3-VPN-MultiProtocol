@@ -46,7 +46,7 @@ Design Proposal and simulation of a WAN network with multiple customers.
 * [Network Topology](./images/network-topology.png)
 
 # How to use
-* [Download the portable project](./resources/PROYECTOFINAL.gns3project) 
+* [Download the portable project](https://mega.nz/file/4ckSkS4a#ph-ZcI0ZUiYCyp7f-9hIJvCFkYBMkwsB_760QwgsPNs) 
 * Download all images and appliances listed above on requeriments section.
 * Install the images and appliances
 * Import the project on GNS3
