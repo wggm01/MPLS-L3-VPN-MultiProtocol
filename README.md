@@ -21,6 +21,7 @@ Design Proposal and simulation of a WAN network with multiple customers.
 * GNS3 Version 2.2.9
 * GNS3 VM VMware Workstation and Fusion (Only Windows)
 * IOU L2 Support (if you use Linux)
+* Minimum RAM:16GB
 
 ## Resources:
 ##### Router Models
