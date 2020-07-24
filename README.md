@@ -17,6 +17,7 @@ Design Proposal and simulation of a WAN network with multiple customers.
 * Mary Gonzalez
 * Ricsa Gonzalez
 * Wvaldo Graell
+* Ariel Guerra
 
 ## Requeriments:
 * GNS3 Version 2.2.9
